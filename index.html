@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kviz</title>
+    <style>
+        body {
+            background-color: #f5f5f5;
+            color: #333333;
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .quiz-container {
+            background-color: #ffffff;
+            color: #333333;
+            border: 1px solid #dddddd;
+            border-radius: 8px;
+            padding: 20px;
+            width: 90%;
+            max-width: 800px;
+            margin: 50px auto;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .quiz-container h1 {
+            font-size: 24px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #f8b400;
+        }
+
+        .question {
+            margin-bottom: 20px;
+        }
+
+        .question p {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        .answers {
+            list-style: none;
+            padding: 0;
+        }
+
+        .answers li {
+            margin: 10px 0;
+        }
+
+        .answers button {
+            background-color: #f8b400;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            width: 100%;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .answers button:hover {
+            background-color: #333333;
+            color: #ffffff;
+        }
+
+        .result {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .result h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #333333;
+        }
+
+        .social-share {
+            margin-top: 20px;
+        }
+
+        .social-share p {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .social-share a {
+            margin: 0 10px;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .social-share img {
+            width: 40px;
+            height: 40px;
+        }
+
+        button {
+            font-family: 'Roboto', sans-serif;
+        }
+
+        @media (max-width: 600px) {
+            .quiz-container {
+                padding: 15px;
+            }
+
+            .quiz-container h1 {
+                font-size: 20px;
+            }
+
+            .question p {
+                font-size: 16px;
+            }
+
+            .answers button {
+                font-size: 14px;
+            }
+
+            .result h2 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <h1>Kviz</h1>
+        <div class="question" id="question">
+            <p>Pitanje će se ovdje prikazati...</p>
+        </div>
+        <ul class="answers" id="answers">
+            <!-- Opcije će se ovdje prikazati -->
+        </ul>
+        <div class="result" id="result" style="display: none;">
+            <h2>Čestitamo, imali ste <span id="score">0</span> točnih odgovora!</h2>
+            <div class="social-share">
+                <p>Podijelite rezultat s prijateljima!</p>
+                <a href="#" target="_blank" id="facebook-share">
+                    <img src="Facebook.png" alt="Facebook">
+                </a>
+                <a href="#" target="_blank" id="x-share">
+                    <img src="X.png" alt="X">
+                </a>
+                <a href="#" target="_blank" id="linkedin-share">
+                    <img src="ln.png" alt="LinkedIn">
+                </a>
+            </div>
+            <button onclick="restartQuiz()">Ponovno pokreni kviz</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "Koji je glavni grad Hrvatske?",
+                options: ["Zagreb", "Split", "Rijeka", "Osijek"],
+                correct: 0
+            },
+            {
+                question: "Koja rijeka prolazi kroz Mostar?",
+                options: ["Neretva", "Drina", "Sava", "Bosna"],
+                correct: 0
+            },
+            {
+                question: "Koji sport se igra loptom na travi?",
+                options: ["Nogomet", "Košarka", "Tenis", "Rukomet"],
+                correct: 0
+            },
+            {
+                question: "Koji dan dolazi nakon ponedjeljka?",
+                options: ["Utorak", "Srijeda", "Četvrtak", "Petak"],
+                correct: 0
+            },
+            {
+                question: "Koliko minuta ima jedan sat?",
+                options: ["60", "30", "90", "120"],
+                correct: 0
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+
+        function loadQuestion() {
+            const questionElement = document.getElementById('question');
+            const answersElement = document.getElementById('answers');
+
+            questionElement.querySelector('p').textContent = questions[currentQuestion].question;
+            answersElement.innerHTML = '';
+
+            questions[currentQuestion].options.forEach((option, index) => {
+                const li = document.createElement('li');
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.onclick = () => checkAnswer(index);
+                li.appendChild(button);
+                answersElement.appendChild(li);
+            });
+        }
+
+        function checkAnswer(selected) {
+            if (selected === questions[currentQuestion].correct) {
+                score++;
+            }
+
+            currentQuestion++;
+
+            if (currentQuestion < questions.length) {
+                loadQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            document.getElementById('question').style.display = 'none';
+            document.getElementById('answers').style.display = 'none';
+            const resultElement = document.getElementById('result');
+            resultElement.style.display = 'block';
+            resultElement.querySelector('#score').textContent = score;
+
+            const url = encodeURIComponent(window.location.href);
+            const text = encodeURIComponent(`Imao sam ${score} točnih odgovora na ovom kvizu!`);
+            document.getElementById('facebook-share').href = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+            document.getElementById('x-share').href = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
+            document.getElementById('linkedin-share').href = `https://www.linkedin.com/shareArticle?mini=true&url=${url}&title=Rezultat%20kviza&summary=${text}`;
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            document.getElementById('question').style.display = 'block';
+            document.getElementById('answers').style.display = 'block';
+            document.getElementById('result').style.display = 'none';
+            loadQuestion();
+        }
+
+        // Učitavanje prvog pitanja
+        loadQuestion();
+    </script>
+</body>
+</html>
